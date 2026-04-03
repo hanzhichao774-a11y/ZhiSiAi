@@ -1,0 +1,116 @@
+.feedback-page {
+  min-height: 100vh;
+  padding: 16px;
+  padding-bottom: 100px;
+}
+
+.fb-header {
+  text-align: center;
+  padding: 24px 0;
+
+  .fb-icon { font-size: 48px; display: block; margin-bottom: 12px; }
+  .fb-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .fb-desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.fb-card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+
+  .card-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    display: block;
+    margin-bottom: 14px;
+  }
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.summary-item {
+  text-align: center;
+
+  .sum-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-primary);
+    display: block;
+    &.success { color: var(--color-success); }
+    &.warn { color: var(--color-warning); }
+  }
+  .sum-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+  }
+}
+
+.star-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+
+  .star {
+    font-size: 32px;
+    cursor: pointer;
+    transition: transform 0.15s;
+
+    &:active { transform: scale(1.2); }
+    &.active { transform: scale(1.1); }
+  }
+}
+
+.rating-hint {
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-light);
+  display: block;
+}
+
+.note-input {
+  width: 100%;
+  min-height: 80px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.submit-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 16px;
+  margin-bottom: calc(16px + env(safe-area-inset-bottom));
+  background: var(--color-primary);
+  color: #fff;
+  text-align: center;
+  padding: 14px;
+  border-radius: var(--radius-xl);
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(79, 110, 247, 0.35);
+
+  &:active { opacity: 0.85; }
+}

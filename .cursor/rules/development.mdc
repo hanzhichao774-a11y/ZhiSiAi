@@ -1,0 +1,59 @@
+---
+description: 智思家长AI 项目开发规范 — 每次协助开发时自动遵守
+globs:
+alwaysApply: true
+---
+
+# 开发纪律
+
+## 1. Commit 规范
+
+- 每次提交必须使用 Conventional Commits 格式：`<type>(<scope>): <subject>`
+- type 取值：feat / fix / docs / style / refactor / perf / test / chore
+- scope 取值：client / server / prompt / archive / config
+- subject 使用中文，不超过 50 字符，不加句号
+- 详细规范参见项目根目录 `COMMIT_CONVENTION.md`
+
+## 2. 文档同步
+
+- 新增或修改后端 API 接口时，同步更新 `docs/backend.md` 中对应的接口文档
+- 新增或修改前端页面时，同步更新 `docs/frontend.md` 中的页面清单和说明
+- 修改 AI Prompt 时，同步更新 `docs/backend.md` 中的 Prompt 系统说明
+
+## 3. CHANGELOG 更新时机
+
+- 仅在显著功能完成（新功能上线、重大重构、用户可感知的改进）时提醒更新 `CHANGELOG.md`
+- 普通 bug fix、代码风格调整、小型重构不需要更新 CHANGELOG
+- CHANGELOG 条目使用中文，归类到 Added / Changed / Fixed / Removed 下
+
+## 4. 安全纪律
+
+- 绝不提交 `.env` 文件、API 密钥、Token 或任何敏感数据
+- 修改配置文件时检查 `.gitignore` 是否已覆盖敏感文件
+- 新增环境变量时同步更新 `.env.example` 并在 `docs/backend.md` 中说明
+
+## 5. 代码质量
+
+- 后端路由处理函数必须包含 try/catch，catch 中返回合理的 fallback mock 数据或错误信息
+- AI Prompt 修改后必须保持 JSON 输出格式约定不变，不得破坏下游解析逻辑
+- 前端页面组件中不直接调用 AI 接口，统一通过 `services/api.ts` 封装层
+- TypeScript 类型定义保持完整，避免使用 `any` 类型
+
+## 6. 项目结构
+
+```
+ZhiSiAi/
+├── client/          # 前端 Taro 项目
+│   └── src/
+│       ├── pages/   # 页面组件
+│       ├── store/   # Zustand 状态管理
+│       └── services/# API 调用封装
+├── server/          # 后端 Express 服务
+│   └── src/
+│       ├── routes/  # API 路由
+│       ├── services/# 业务逻辑
+│       └── prompts/ # AI Prompt 模板
+├── docs/            # 技术文档
+├── COMMIT_CONVENTION.md
+└── CHANGELOG.md
+```
