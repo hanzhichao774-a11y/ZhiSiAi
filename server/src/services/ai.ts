@@ -46,27 +46,29 @@ export async function visionAnalysis(
   imageBase64: string,
   userMessage: string
 ): Promise<string> {
-  try {
-    const response = await client.chat.completions.create({
-      model: process.env.AI_VISION_MODEL || 'MiniMax-Text-01',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: userMessage },
-            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}` } },
-          ],
-        },
-      ],
-      temperature: 0.3,
-      max_tokens: 4000,
-    })
-    return response.choices[0]?.message?.content || ''
-  } catch (error) {
-    console.error('Vision API call failed:', error)
-    throw new Error('图像分析服务暂时不可用')
+  const apiHost = process.env.AI_BASE_URL?.replace(/\/v1\/?$/, '') || 'https://api.minimaxi.com'
+  const prompt = `${systemPrompt}\n\n${userMessage}`
+
+  const resp = await fetch(`${apiHost}/v1/coding_plan/vlm`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.AI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      prompt,
+      image_url: `data:image/jpeg;base64,${imageBase64}`,
+    }),
+  })
+
+  const data = await resp.json() as any
+  if (data.base_resp?.status_code !== 0) {
+    const msg = data.base_resp?.status_msg || 'VLM API error'
+    console.error('VLM API error:', msg)
+    throw new Error(msg)
   }
+
+  return data.content || ''
 }
 
 export function imageToBase64(filePath: string): string {
