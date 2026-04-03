@@ -6,6 +6,19 @@ const client = new OpenAI({
   baseURL: process.env.AI_BASE_URL || 'https://api.minimax.chat/v1',
 })
 
+export function stripThinkTags(text: string): string {
+  return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
+}
+
+export function extractJSON(text: string): string {
+  const cleaned = stripThinkTags(text)
+  const match = cleaned.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (match) return match[1].trim()
+  const braceMatch = cleaned.match(/(\{[\s\S]*\})/)
+  if (braceMatch) return braceMatch[1].trim()
+  return cleaned
+}
+
 export async function chatCompletion(
   systemPrompt: string,
   userMessage: string,

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { getArchiveStats, updateArchive } from '../services/archive'
-import { chatCompletion } from '../services/ai'
+import { chatCompletion, stripThinkTags } from '../services/ai'
 import { ARCHIVE_SUGGESTION_PROMPT } from '../prompts/report'
 
 export const archiveRouter = Router()
@@ -42,8 +42,8 @@ archiveRouter.get('/:childId/suggestions', async (req, res) => {
 
   try {
     const userPrompt = `孩子的学习档案数据：\n${JSON.stringify(stats, null, 2)}\n\n请基于以上数据生成阶段性学习建议。`
-    const suggestion = await chatCompletion(ARCHIVE_SUGGESTION_PROMPT, userPrompt)
-    res.json({ suggestion })
+    const raw = await chatCompletion(ARCHIVE_SUGGESTION_PROMPT, userPrompt)
+    res.json({ suggestion: stripThinkTags(raw) })
   } catch {
     const weakPoints = stats.knowledgePoints
       .filter((kp) => kp.score < 60)

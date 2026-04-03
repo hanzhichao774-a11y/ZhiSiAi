@@ -2,7 +2,7 @@ import { Router } from 'express'
 import multer from 'multer'
 import path from 'path'
 import { v4 as uuid } from 'uuid'
-import { visionAnalysis, imageToBase64 } from '../services/ai'
+import { visionAnalysis, imageToBase64, extractJSON } from '../services/ai'
 import { OCR_ANALYZE_SYSTEM_PROMPT, OCR_ANALYZE_USER_PROMPT } from '../prompts/ocr-analyze'
 import { getArchive } from '../services/archive'
 import { chatCompletion } from '../services/ai'
@@ -33,9 +33,9 @@ homeworkRouter.post('/upload', upload.single('image'), async (req, res) => {
         imageBase64,
         OCR_ANALYZE_USER_PROMPT
       )
-      analysisResult = JSON.parse(aiResponse)
-    } catch {
-      // Fallback mock data when AI is unavailable
+      analysisResult = JSON.parse(extractJSON(aiResponse))
+    } catch (err) {
+      console.warn('Vision OCR failed, using mock data:', (err as Error).message)
       analysisResult = getMockAnalysis()
     }
 
@@ -52,7 +52,7 @@ homeworkRouter.post('/upload', upload.single('image'), async (req, res) => {
           COMPARE_SYSTEM_PROMPT,
           buildCompareUserPrompt(analysisResult.questions, archive)
         )
-        const comparisons = JSON.parse(compareResponse).comparisons
+        const comparisons = JSON.parse(extractJSON(compareResponse)).comparisons
         for (const comp of comparisons) {
           const q = analysisResult.questions.find((q: any) => q.id === comp.questionId)
           if (q) q.compareStatus = comp.compareStatus

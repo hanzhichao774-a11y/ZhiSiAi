@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { chatCompletion } from '../services/ai'
+import { chatCompletion, extractJSON } from '../services/ai'
 import {
   SOCRATIC_CORRECT_SYSTEM_PROMPT,
   SOCRATIC_VERIFY_SYSTEM_PROMPT,
@@ -26,9 +26,10 @@ tutorRouter.post('/guide', async (req, res) => {
 
     try {
       const aiResponse = await chatCompletion(systemPrompt, userPrompt)
-      const guide = JSON.parse(aiResponse)
+      const guide = JSON.parse(extractJSON(aiResponse))
       res.json(guide)
-    } catch {
+    } catch (err) {
+      console.warn('Guide AI failed, using fallback:', (err as Error).message)
       res.json(mode === 'verify'
         ? {
             mode: 'verify',
@@ -61,8 +62,9 @@ tutorRouter.post('/simplify', async (req, res) => {
 
     try {
       const aiResponse = await chatCompletion(SOCRATIC_SIMPLIFY_SYSTEM_PROMPT, userPrompt)
-      res.json(JSON.parse(aiResponse))
-    } catch {
+      res.json(JSON.parse(extractJSON(aiResponse)))
+    } catch (err) {
+      console.warn('Simplify AI failed, using fallback:', (err as Error).message)
       res.json({
         mode: 'correct',
         steps: [
@@ -85,8 +87,9 @@ tutorRouter.post('/verify', async (req, res) => {
 
     try {
       const aiResponse = await chatCompletion(MASTERY_EVAL_SYSTEM_PROMPT, userPrompt)
-      res.json(JSON.parse(aiResponse))
-    } catch {
+      res.json(JSON.parse(extractJSON(aiResponse)))
+    } catch (err) {
+      console.warn('Verify AI failed, using fallback:', (err as Error).message)
       const hasMastered = childExplanation && childExplanation.length > 15
       res.json({
         mastered: hasMastered,
