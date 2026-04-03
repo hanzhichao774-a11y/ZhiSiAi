@@ -4,6 +4,7 @@
   flex-direction: column;
   background: linear-gradient(180deg, var(--color-primary) 0%, #6C8CFF 40%, var(--color-bg) 100%);
   padding: 0 24px;
+  overflow-y: auto;
 }
 
 .login-header {
@@ -32,6 +33,8 @@
 
 .feature-swiper {
   flex: 1;
+  min-height: 0;
+  max-height: 280px;
   margin-top: 40px;
 }
 

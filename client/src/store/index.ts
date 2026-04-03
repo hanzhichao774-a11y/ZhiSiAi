@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import Taro from '@tarojs/taro'
 
 export interface Question {
   id: string
@@ -56,10 +57,7 @@ export const useAppStore = create<AppState>((set) => ({
   recentSessions: [],
 
   setLoggedIn: (user, token) => {
-    if (typeof window !== 'undefined') {
-      const Taro = require('@tarojs/taro')
-      Taro.setStorageSync('token', token)
-    }
+    try { Taro.setStorageSync('token', token) } catch {}
     set({ isLoggedIn: true, user })
   },
 
@@ -85,10 +83,7 @@ export const useAppStore = create<AppState>((set) => ({
     })),
 
   logout: () => {
-    if (typeof window !== 'undefined') {
-      const Taro = require('@tarojs/taro')
-      Taro.removeStorageSync('token')
-    }
+    try { Taro.removeStorageSync('token') } catch {}
     set({ isLoggedIn: false, user: null })
   },
 }))

@@ -1,6 +1,6 @@
 import { View, Text, Image, Swiper, SwiperItem } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAppStore } from '../../store'
 import './index.scss'
 
@@ -26,14 +26,35 @@ export default function LoginPage() {
   const setLoggedIn = useAppStore((s) => s.setLoggedIn)
   const [loading, setLoading] = useState(false)
 
+  const doLogin = () => {
+    const mockUser = { id: 'demo_user_1', nickname: '家长用户', avatar: '' }
+    const mockToken = 'demo_token_' + Date.now()
+    setLoggedIn(mockUser, mockToken)
+  }
+
+  const goHome = () => {
+    if (typeof window !== 'undefined') {
+      window.location.hash = '#/pages/index/index'
+    } else {
+      Taro.switchTab({ url: '/pages/index/index' })
+    }
+  }
+
+  useEffect(() => {
+    if (process.env.TARO_ENV === 'h5') {
+      const timer = setTimeout(() => {
+        doLogin()
+        goHome()
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
   const handleLogin = async () => {
     setLoading(true)
     try {
-      // Demo: simulate login
-      const mockUser = { id: 'demo_user_1', nickname: '家长用户', avatar: '' }
-      const mockToken = 'demo_token_' + Date.now()
-      setLoggedIn(mockUser, mockToken)
-      Taro.switchTab({ url: '/pages/index/index' })
+      doLogin()
+      goHome()
     } catch (e) {
       Taro.showToast({ title: '登录失败，请重试', icon: 'none' })
     } finally {
